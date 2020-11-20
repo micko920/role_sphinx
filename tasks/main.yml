@@ -1,0 +1,68 @@
+---
+- include_tasks: is_systemd.yml
+
+# Variable configuration.
+- include_tasks: variables.yml
+
+
+- name: Ensure Sphinx Python libraries are installed.
+  apt:
+    name: "{{ sphinx_python_library }}"
+    state: present
+
+- name: Ensure Sphinx packages are installed.
+  apt:
+    name: "{{ sphinx_packages }}"
+    state: present
+
+- name: Get installed version.
+  command:  sphinx-build --version
+  changed_when: false
+  failed_when: false
+  check_mode: false
+  register: sphinx_installed_version
+
+    # The \s\S regex allows the match of any character and also \n 'newline'.
+    # This is to allow the complete match to the end a string with embedded '\n'.
+    # Normal '.*' does not match '\n'
+- name: Flag new installation
+  set_fact:
+    new_sphinx_install: true
+  when:
+    - (sphinx_installed_version.rc != 0) or (sphinx_installed_version.stdout | regex_replace("^sphinx-build ([0-9.]+)[\s\S]*$", "\\1") is not match(sphinx_version))
+
+- name: Ensure workspace exists
+  file:
+    path: "{{ sphinx_workspace }}"
+    state: directory
+    mode: 0700
+    recurse: true
+  when:
+    - new_sphinx_install is defined
+    - new_sphinx_install
+
+- name: copy requirements file to remote host
+  copy:
+    src: requirements.txt
+    dest: "{{ sphinx_requirements_file }}"
+    owner: root
+    group: staff
+    mode: u=rw,g=r,o=r
+
+- name: Install Sphinx
+  pip:
+    requirements: "{{ sphinx_requirements_file }}"
+    executable: pip3
+
+- name: Flag new installation complete
+  set_fact:
+    new_sphinx_install: false
+
+- name: Remove workspace
+  file:
+    path: "{{ sphinx_workspace }}"
+    state: absent
+  when:
+    - new_sphinx_install is defined
+    - not new_sphinx_install
+

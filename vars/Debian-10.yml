@@ -1,0 +1,11 @@
+---
+
+sphinx_version: "2.2.2"
+sphinx_workspace: "/root/workspace"
+sphinx_requirements_file: "{{ sphinx_workspace }}/requirements.txt"
+sphinx_python_library:
+    - cython
+
+sphinx_packages:
+    - python3-pip
+    - python3-dev

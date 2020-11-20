@@ -1,0 +1,8 @@
+sphinx
+ablog
+sphinxcontrib-plantuml
+sphinxcontrib-jinjadomain
+sphinxcontrib-needs
+sphinxcontrib-spelling
+sphinxcontrib-images
+sphinx-rtd-theme
