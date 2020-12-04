@@ -6,3 +6,8 @@ sphinxcontrib-needs
 sphinxcontrib-spelling
 sphinxcontrib-images
 sphinx-rtd-theme
+sphinx_markdown_tables
+recommonmark
+sphinx-copybutton
+sphinx-reload
+
